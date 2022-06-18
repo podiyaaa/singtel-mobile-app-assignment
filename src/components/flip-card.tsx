@@ -1,11 +1,16 @@
 import React from 'react';
 import {
-  Animated, Pressable, StyleSheet, Text,
+  Animated, Pressable, StyleSheet, Text, View,
 } from 'react-native';
 
-function FlipCard() {
-  const animatedValue = new Animated.Value(0);
-  let toValue = 0;
+export type FlipCardProps = {
+  value: string;
+}
+
+function FlipCard(props: FlipCardProps) {
+  const animatedValue: Animated.Value = new Animated.Value(0);
+  let toValue: number = 0;
+  const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
   animatedValue.addListener(({ value }) => {
     toValue = value;
   });
@@ -13,35 +18,38 @@ function FlipCard() {
     inputRange: [0, 180],
     outputRange: ['0deg', '180deg'],
   });
-
   const backInterpolate = animatedValue.interpolate({
     inputRange: [0, 180],
     outputRange: ['180deg', '360deg'],
   });
-
+  const flipBack = () => {
+    Animated.spring(animatedValue, {
+      friction: 8,
+      tension: 10,
+      useNativeDriver: false,
+      toValue: 180,
+    }).start();
+  };
+  const flipFront = () => {
+    Animated.spring(animatedValue, {
+      friction: 8,
+      tension: 10,
+      useNativeDriver: false,
+      toValue: 0,
+    }).start();
+  };
   const onPress = () => {
-    if (toValue >= 90) {
-      Animated.spring(animatedValue, {
-        friction: 8,
-        tension: 10,
-        useNativeDriver: false,
-        toValue: 0,
-      }).start();
-    } else {
-      Animated.spring(animatedValue, {
-        friction: 8,
-        tension: 10,
-        useNativeDriver: false,
-        toValue: 180,
-      }).start();
+    if (toValue === 0) {
+      flipBack();
+      setTimeout(() => {
+        flipFront();
+      }, 1000);
     }
   };
+  const { value } = props;
 
   return (
-    <Pressable
-      onPress={onPress}
-      style={style.pressable}
-    >
+    <View style={style.pressable}>
       <Animated.View style={StyleSheet.flatten([
         style.animatedCard,
         style.backCard,
@@ -49,18 +57,20 @@ function FlipCard() {
           transform: [{ rotateY: backInterpolate }],
         }])}
       >
-        <Text>Back</Text>
+        <Text style={style.backText}>{value}</Text>
       </Animated.View>
-      <Animated.View style={StyleSheet.flatten([
-        style.animatedCard,
-        style.frontCard,
-        {
-          transform: [{ rotateY: frontInterpolate }],
-        }])}
+      <AnimatedPressable
+        onPress={onPress}
+        style={StyleSheet.flatten([
+          style.animatedCard,
+          style.frontCard,
+          {
+            transform: [{ rotateY: frontInterpolate }],
+          }])}
       >
-        <Text>Front</Text>
-      </Animated.View>
-    </Pressable>
+        <Text style={style.frontText}>?</Text>
+      </AnimatedPressable>
+    </View>
   );
 }
 
@@ -91,5 +101,15 @@ const style = StyleSheet.create({
   frontCard: {
     position: 'absolute',
     backgroundColor: 'rgb(77,160,237)',
+  },
+  frontText: {
+    fontSize: 30,
+    fontWeight: '500',
+    color: 'white',
+  },
+  backText: {
+    fontSize: 30,
+    fontWeight: '500',
+    color: 'black',
   },
 });

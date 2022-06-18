@@ -5,7 +5,7 @@ import FlipCard from './components/flip-card';
 function App() {
   return (
     <SafeAreaView style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-      <FlipCard />
+      <FlipCard value="3" />
     </SafeAreaView>
   );
 }

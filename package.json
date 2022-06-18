@@ -15,6 +15,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
+    "@babel/preset-env": "^7.18.2",
+    "@babel/preset-typescript": "^7.17.12",
     "@babel/runtime": "^7.12.5",
     "@types/jest": "^26.0.23",
     "@types/react-native": "^0.67.3",
@@ -47,6 +49,9 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "transform": {
+      "\\.[jt]sx?$": "babel-jest"
+    }
   }
 }
